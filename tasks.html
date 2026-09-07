@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=6" />
     <title>To-Do Harian · Financial Tracker</title>
   </head>
   <body>
@@ -17,6 +17,7 @@
       <section class="task-board" aria-label="Senarai tugasan"><div class="task-column urgent-column"><div class="task-column-title"><h2>Urgent</h2><span id="urgentLabel">0</span></div><p>Perlu tindakan sekarang</p><div id="urgentTasks" class="task-list"></div></div><div class="task-column pending-column"><div class="task-column-title"><h2>Pending</h2><span id="pendingLabel">0</span></div><p>Belum bermula atau sedang dibuat</p><div id="pendingTasks" class="task-list"></div></div><div class="task-column waiting-column"><div class="task-column-title"><h2>Waiting</h2><span id="waitingLabel">0</span></div><p>Menunggu pihak lain</p><div id="waitingTasks" class="task-list"></div></div><div class="task-column complete-column"><div class="task-column-title"><h2>Complete</h2><span id="completeLabel">0</span></div><p>Siap dan direkodkan</p><div id="completeTasks" class="task-list"></div></div></section>
     </main>
     <template id="emptyTaskTemplate"><p class="empty-task">Tiada task</p></template>
-    <script src="tasks.js?v=5"></script>
+    <script src="tasks.js?v=6"></script>
+    <script type="module" src="cloud.js?v=6"></script>
   </body>
 </html>

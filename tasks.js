@@ -30,5 +30,6 @@ function renderTasks() {
 task$("#taskDueDate").value = todayTaskDate;
 task$("#taskForm").addEventListener("submit", event => { event.preventDefault(); tasks.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), title: task$("#taskTitle").value.trim(), status: task$("#taskStatus").value, dueDate: task$("#taskDueDate").value, focus: task$("#taskFocus").checked, note: task$("#taskNote").value.trim(), createdAt: Date.now() }); saveTasks(); event.target.reset(); task$("#taskDueDate").value = todayTaskDate; renderTasks(); });
 task$(".task-board").addEventListener("change", event => { const statusControl = event.target.closest("[data-id]"); const focusControl = event.target.closest("[data-focus-id]"); if (statusControl) { const task = tasks.find(item => item.id === statusControl.dataset.id); if (task) { task.status = statusControl.value; if (task.status === "complete") task.focus = false; saveTasks(); renderTasks(); } } if (focusControl) { const task = tasks.find(item => item.id === focusControl.dataset.focusId); if (task) { task.focus = focusControl.checked; saveTasks(); renderTasks(); } } });
+document.addEventListener("ft-cloud-data", () => { tasks = loadTasks(); renderTasks(); });
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js"));
 renderTasks();

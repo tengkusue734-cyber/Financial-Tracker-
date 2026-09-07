@@ -55,5 +55,6 @@ $("#transactionList").addEventListener("click", (event) => { const button = even
 monthFilter.addEventListener("change", render);
 window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); deferredInstallPrompt = event; $("#installButton").hidden = false; });
 $("#installButton").addEventListener("click", async () => { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; $("#installButton").hidden = true; });
+document.addEventListener("ft-cloud-data", () => { transactions = readTransactions(); customCategories = readCategories(); render(); });
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js"));
 render();

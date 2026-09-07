@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=6" />
     <title>Hutang & Bayaran · Financial Tracker</title>
   </head>
   <body>
@@ -35,6 +35,7 @@
     </main>
     <dialog id="paymentDialog" class="transaction-dialog"><form id="paymentForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2 id="paymentTitle">Rekod bayaran</h2></div><button class="icon-button close-button" id="closePayment" type="button" aria-label="Tutup">×</button></div><p id="paymentHelp" class="form-help"></p><label>Jumlah bayaran (RM)<input id="paymentAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></label><div class="two-columns"><label>Tarikh bayaran<input id="paymentDate" required type="date" /></label><label>Nota<input id="paymentNote" maxlength="80" placeholder="Contoh: Bayaran pertama" /></label></div><button class="save-button" type="submit">Simpan bayaran</button></form></dialog>
     <template id="emptyDebtTemplate"><div class="empty-state"><div>◎</div><h3>Belum ada rekod hutang</h3><p>Tambah rekod untuk mula menjejak bayaran.</p></div></template>
-    <script src="debts.js?v=5"></script>
+    <script src="debts.js?v=6"></script>
+    <script type="module" src="cloud.js?v=6"></script>
   </body>
 </html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#14532d" />
+    <meta name="description" content="Jejak pendapatan dan perbelanjaan harian anda." />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="stylesheet" href="styles.css?v=5" />
+    <title>Financial Tracker</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">KEWANGAN SAYA</p>
+          <h1>Financial Tracker</h1>
+        </div>
+        <button class="icon-button" id="installButton" aria-label="Pasang aplikasi" hidden>↓</button>
+      </header>
+      <nav class="page-nav" aria-label="Navigasi utama"><a class="active" href="index.html">Dashboard</a><a href="tasks.html">To-Do Harian</a><a href="debts.html">Hutang &amp; Bayaran</a></nav>
+
+      <section class="month-control" aria-label="Pilih bulan">
+        <label for="monthFilter">Bulan</label>
+        <input id="monthFilter" type="month" />
+      </section>
+
+      <section class="balance-card" aria-labelledby="balanceTitle">
+        <p id="balanceTitle">Baki bulan ini</p>
+        <strong id="balance">RM0.00</strong>
+        <div class="balance-breakdown">
+          <span><small>Pendapatan</small><b id="incomeTotal">RM0.00</b></span>
+          <span><small>Jualan</small><b id="salesTotal">RM0.00</b></span>
+          <span><small>Perbelanjaan</small><b id="expenseTotal">RM0.00</b></span>
+          <span><small>Simpanan</small><b id="savingsTotal">RM0.00</b></span>
+        </div>
+      </section>
+
+      <section class="quick-actions" aria-label="Tambah transaksi">
+        <button class="action expense" data-open-form="expense"><span>−</span> Tambah Belanja</button>
+        <button class="action income" data-open-form="income"><span>+</span> Tambah Income</button>
+        <button class="action savings" data-open-form="savings"><span>◎</span> Rekod Simpanan</button>
+        <button class="action sales" data-open-form="sales"><span>↗</span> Rekod Jualan</button>
+      </section>
+
+      <section class="history-section" aria-labelledby="historyTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">REKOD</p><h2 id="historyTitle">Transaction History</h2></div>
+          <span id="transactionCount" class="count">0 transaksi</span>
+        </div>
+        <div id="transactionList" class="transaction-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <dialog id="transactionDialog" class="transaction-dialog">
+      <form id="transactionForm" method="dialog">
+        <div class="dialog-heading">
+          <div><p id="formEyebrow" class="eyebrow">TRANSAKSI</p><h2 id="formTitle">Tambah transaksi</h2></div>
+          <button type="button" class="icon-button close-button" id="closeDialog" aria-label="Tutup">×</button>
+        </div>
+        <input id="transactionType" type="hidden" value="expense" />
+        <label>Jumlah (RM)<input id="amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" required /></label>
+        <label>Butiran<input id="description" type="text" maxlength="60" placeholder="Contoh: Makan tengah hari" required /></label>
+        <div class="two-columns">
+          <label>Kategori<select id="category" required></select><span class="new-category"><input id="newCategory" type="text" maxlength="30" placeholder="Kategori baru" aria-label="Kategori baru" /><button id="addCategory" type="button">+ Tambah</button></span></label>
+          <label>Kaedah bayaran<select id="paymentMethod" required>
+            <option>Cash</option><option>Debit Card</option><option>Credit Card</option><option>Online Transfer</option><option>E-Wallet</option>
+          </select></label>
+        </div>
+        <label>Tarikh<input id="transactionDate" type="date" required /></label>
+        <button class="save-button" type="submit">Simpan transaksi</button>
+      </form>
+    </dialog>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state"><div>◌</div><h3>Belum ada transaksi</h3><p>Tambah pendapatan atau perbelanjaan untuk bulan ini.</p></div>
+    </template>
+    <script src="app.js?v=5"></script>
+  </body>
+</html>

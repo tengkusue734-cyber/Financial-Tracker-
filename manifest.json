@@ -1,0 +1,10 @@
+{
+  "name": "Financial Tracker",
+  "short_name": "Kewangan",
+  "description": "Jejak pendapatan dan perbelanjaan harian anda.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#14532d",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

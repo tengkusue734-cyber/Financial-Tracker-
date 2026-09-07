@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#14532d" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css?v=5" />
+    <title>To-Do Harian · Financial Tracker</title>
+  </head>
+  <body>
+    <main class="app-shell task-shell">
+      <header class="topbar"><div><p class="eyebrow">PENGURUSAN HARIAN</p><h1>To-Do Harian</h1></div><a class="icon-button nav-home" href="index.html" aria-label="Kembali ke dashboard">⌂</a></header>
+      <nav class="page-nav" aria-label="Navigasi utama"><a href="index.html">Dashboard</a><a class="active" href="tasks.html">To-Do Harian</a><a href="debts.html">Hutang &amp; Bayaran</a></nav>
+      <section class="task-overview" aria-label="Ringkasan hari ini"><article class="focus-card"><small>FOKUS HARI INI</small><strong id="todayFocus">0</strong><span>Tugasan perlu disiapkan hari ini</span></article><article class="urgent-card"><small>URGENT</small><strong id="urgentCount">0</strong><span>Perlu tindakan segera</span></article><article class="waiting-card"><small>WAITING</small><strong id="waitingCount">0</strong><span>Menunggu orang / maklum balas</span></article></section>
+      <section class="task-form-section"><div><p class="eyebrow">TUGASAN BARU</p><h2>Tambah task</h2></div><form id="taskForm" class="task-form"><label>Tajuk tugasan<input id="taskTitle" required maxlength="100" placeholder="Contoh: Hantar quotation kepada Ahmad" /></label><div class="two-columns"><label>Status<select id="taskStatus"><option value="pending">Pending</option><option value="urgent">Urgent</option><option value="waiting">Waiting</option><option value="complete">Complete</option></select></label><label>Tarikh akhir<input id="taskDueDate" required type="date" /></label></div><div class="task-options"><label class="focus-option"><input id="taskFocus" type="checkbox" /> Fokus hari ini</label><label>Nota ringkas<input id="taskNote" maxlength="100" placeholder="Apa langkah seterusnya?" /></label></div><button class="save-button" type="submit">Tambah task</button></form></section>
+      <section class="task-board" aria-label="Senarai tugasan"><div class="task-column urgent-column"><div class="task-column-title"><h2>Urgent</h2><span id="urgentLabel">0</span></div><p>Perlu tindakan sekarang</p><div id="urgentTasks" class="task-list"></div></div><div class="task-column pending-column"><div class="task-column-title"><h2>Pending</h2><span id="pendingLabel">0</span></div><p>Belum bermula atau sedang dibuat</p><div id="pendingTasks" class="task-list"></div></div><div class="task-column waiting-column"><div class="task-column-title"><h2>Waiting</h2><span id="waitingLabel">0</span></div><p>Menunggu pihak lain</p><div id="waitingTasks" class="task-list"></div></div><div class="task-column complete-column"><div class="task-column-title"><h2>Complete</h2><span id="completeLabel">0</span></div><p>Siap dan direkodkan</p><div id="completeTasks" class="task-list"></div></div></section>
+    </main>
+    <template id="emptyTaskTemplate"><p class="empty-task">Tiada task</p></template>
+    <script src="tasks.js?v=5"></script>
+  </body>
+</html>

@@ -99,3 +99,5 @@ h1,h2,h3,p { margin:0; } h1 { font-size:1.45rem; letter-spacing:-.04em; } h2 { f
 .transaction .row-actions { margin-right:-4px; }
 .transaction .delete-button { margin-left:0; }
 .goal-card-top .row-actions { align-self:flex-start; }
+.new-category { display:flex; gap:5px; margin-top:2px; }
+.new-category input { min-width:0; padding:8px !important; font-size:.75rem !important; }

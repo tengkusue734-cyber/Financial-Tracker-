@@ -28,6 +28,23 @@ function readGoals() {
     return result;
   } catch { return {}; }
 }
+function addSavingsCategory(rawName) {
+  const name = (rawName || "").trim().replace(/\s+/g, " ");
+  if (!name) return "";
+  const exists = knownCategories().some(category => category.toLocaleLowerCase() === name.toLocaleLowerCase());
+  if (!exists) {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(SAVINGS_CATEGORY_KEY)) || {}; } catch { saved = {}; }
+    saved.savings = [...(saved.savings || []), name];
+    localStorage.setItem(SAVINGS_CATEGORY_KEY, JSON.stringify(saved));
+  }
+  return knownCategories().find(category => category.toLocaleLowerCase() === name.toLocaleLowerCase()) || name;
+}
+function fillCategorySelect(select, selected) {
+  select.innerHTML = "";
+  const options = [...new Set([...knownCategories(), ...(selected ? [selected] : [])])];
+  options.forEach(category => { const option = document.createElement("option"); option.value = category; option.textContent = category; option.selected = category === selected; select.append(option); });
+}
 function saveGoals(goals) { localStorage.setItem(SAVINGS_GOAL_KEY, JSON.stringify(goals)); }
 function knownCategories() {
   let custom = [];
@@ -44,13 +61,7 @@ function renderGoals() {
   save$("#goalCount").textContent = `${entries.length} sasaran`;
 
   const select = save$("#goalCategory");
-  const previous = select.value;
-  select.innerHTML = "";
-  knownCategories().forEach(category => {
-    const option = document.createElement("option");
-    option.value = category; option.textContent = category; option.selected = category === previous;
-    select.append(option);
-  });
+  fillCategorySelect(select, select.value);
 
   const list = save$("#goalList");
   list.innerHTML = "";
@@ -168,9 +179,7 @@ save$("#savingsList").addEventListener("click", event => {
   const record = readAllTransactions().find(item => item.id === button.dataset.editSavings);
   if (!record) return;
   editingSavingsId = record.id; confirmDeleteSavings = false;
-  const select = save$("#editSavingsCategory");
-  select.innerHTML = "";
-  knownCategories().forEach(category => { const option = document.createElement("option"); option.value = category; option.textContent = category; option.selected = category === record.category; select.append(option); });
+  fillCategorySelect(save$("#editSavingsCategory"), record.category);
   save$("#editSavingsAmount").value = record.amount;
   save$("#editSavingsDescription").value = record.description || "";
   save$("#editSavingsMethod").value = record.paymentMethod || "Cash";
@@ -214,6 +223,24 @@ save$("#goalList").addEventListener("click", event => {
   save$("#goalPeriod").value = goal.period;
   save$("#goalAmount").focus();
   save$("#goalAmount").scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+/* ---------- Tambah kategori simpanan baharu ---------- */
+save$("#addGoalCategory").addEventListener("click", () => {
+  const input = save$("#newGoalCategory");
+  const name = addSavingsCategory(input.value);
+  if (!name) { input.focus(); return; }
+  input.value = "";
+  fillCategorySelect(save$("#goalCategory"), name);
+  renderPage();
+  fillCategorySelect(save$("#goalCategory"), name);
+});
+save$("#addEditCategory").addEventListener("click", () => {
+  const input = save$("#newEditCategory");
+  const name = addSavingsCategory(input.value);
+  if (!name) { input.focus(); return; }
+  input.value = "";
+  fillCategorySelect(save$("#editSavingsCategory"), name);
 });
 
 document.addEventListener("ft-cloud-data", renderPage);

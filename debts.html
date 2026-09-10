@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=10" />
     <title>Hutang & Bayaran · Financial Tracker</title>
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar"><div><p class="eyebrow">KEWANGAN SAYA</p><h1>Hutang &amp; Bayaran</h1></div><a class="icon-button nav-home" href="index.html" aria-label="Kembali ke dashboard">⌂</a></header>
-      <nav class="page-nav" aria-label="Navigasi utama"><a href="index.html">Dashboard</a><a href="tasks.html">To-Do Harian</a><a class="active" href="debts.html">Hutang &amp; Bayaran</a></nav>
+      <nav class="page-nav" aria-label="Navigasi utama"><a href="index.html">Dashboard</a><a href="savings.html">Simpanan</a><a href="tasks.html">To-Do</a><a class="active" href="debts.html">Hutang</a></nav>
 
       <section class="debt-summary" aria-label="Ringkasan hutang">
-        <article><small>Orang berhutang dengan saya</small><strong id="receivableTotal">RM0.00</strong><span id="receivableCount">0 rekod aktif</span></article>
-        <article><small>Hutang saya kepada orang</small><strong id="payableTotal">RM0.00</strong><span id="payableCount">0 rekod aktif</span></article>
+        <article class="sum-receivable"><small>Orang berhutang dengan saya</small><strong id="receivableTotal">RM0.00</strong><span id="receivableCount">0 rekod aktif</span></article>
+        <article class="sum-payable"><small>Hutang saya kepada orang</small><strong id="payableTotal">RM0.00</strong><span id="payableCount">0 rekod aktif</span></article>
+        <article class="sum-received"><small>Sudah diterima</small><strong id="receivedTotal">RM0.00</strong><span id="receivedCount">0 bayaran masuk</span></article>
+        <article class="sum-paid"><small>Sudah saya bayar</small><strong id="paidTotal">RM0.00</strong><span id="paidCount">0 bayaran keluar</span></article>
       </section>
 
       <section class="debt-form-section">
@@ -29,13 +31,19 @@
       </section>
 
       <section class="history-section debt-history" aria-labelledby="debtListTitle">
-        <div class="section-heading"><div><p class="eyebrow">SENARAI</p><h2 id="debtListTitle">Rekod hutang aktif</h2></div><span class="count" id="debtRecordCount">0 rekod</span></div>
+        <div class="section-heading"><div><p class="eyebrow">SENARAI</p><h2 id="debtListTitle">Rekod hutang</h2></div><span class="count" id="debtRecordCount">0 rekod</span></div>
+        <div class="scope-switch debt-filter" role="group" aria-label="Tapis rekod hutang">
+          <button type="button" class="active" data-filter="active">Belum selesai</button>
+          <button type="button" data-filter="settled">Sudah selesai</button>
+          <button type="button" data-filter="all">Semua</button>
+        </div>
         <div id="debtList" class="debt-list" aria-live="polite"></div>
       </section>
     </main>
-    <dialog id="paymentDialog" class="transaction-dialog"><form id="paymentForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2 id="paymentTitle">Rekod bayaran</h2></div><button class="icon-button close-button" id="closePayment" type="button" aria-label="Tutup">×</button></div><p id="paymentHelp" class="form-help"></p><label>Jumlah bayaran (RM)<input id="paymentAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></label><div class="two-columns"><label>Tarikh bayaran<input id="paymentDate" required type="date" /></label><label>Nota<input id="paymentNote" maxlength="80" placeholder="Contoh: Bayaran pertama" /></label></div><button class="save-button" type="submit">Simpan bayaran</button></form></dialog>
+    <dialog id="paymentDialog" class="transaction-dialog"><form id="paymentForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2 id="paymentTitle">Rekod bayaran</h2></div><button class="icon-button close-button" id="closePayment" type="button" aria-label="Tutup">×</button></div><p id="paymentHelp" class="form-help"></p><label>Jumlah bayaran (RM)<input id="paymentAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></label><div class="two-columns"><label>Tarikh bayaran<input id="paymentDate" required type="date" /></label><label>Nota<input id="paymentNote" maxlength="80" placeholder="Contoh: Bayaran pertama" /></label></div><button class="save-button" id="savePayment" type="submit">Simpan bayaran</button><button type="button" class="danger-button" id="deletePayment" hidden>Padam bayaran ini</button></form></dialog>
+    <dialog id="debtDialog" class="transaction-dialog"><form id="debtEditForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2>Edit rekod hutang</h2></div><button class="icon-button close-button" id="closeDebtEdit" type="button" aria-label="Tutup">×</button></div><label>Jenis rekod<select id="editDebtType"><option value="receivable">Orang berhutang dengan saya</option><option value="payable">Saya berhutang dengan orang</option></select></label><div class="two-columns"><label>Nama orang / syarikat<input id="editDebtName" required maxlength="60" /></label><label>Jumlah asal (RM)<input id="editDebtAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" /></label></div><div class="two-columns"><label>Tarikh<input id="editDebtDate" required type="date" /></label><label>Nota<input id="editDebtNote" maxlength="80" /></label></div><p id="editDebtHelp" class="form-help"></p><button class="save-button" type="submit">Kemas kini rekod</button><button type="button" class="danger-button" id="deleteDebt">Padam rekod hutang</button></form></dialog>
     <template id="emptyDebtTemplate"><div class="empty-state"><div>◎</div><h3>Belum ada rekod hutang</h3><p>Tambah rekod untuk mula menjejak bayaran.</p></div></template>
-    <script src="debts.js?v=6"></script>
-    <script type="module" src="cloud.js?v=6"></script>
+    <script src="debts.js?v=10"></script>
+    <script type="module" src="cloud.js?v=10"></script>
   </body>
 </html>

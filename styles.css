@@ -31,3 +31,71 @@ h1,h2,h3,p { margin:0; } h1 { font-size:1.45rem; letter-spacing:-.04em; } h2 { f
 .auth-bar[data-state="error"] .auth-info { color:var(--red); }
 .auth-button { flex:none; border:1px solid var(--line); border-radius:9px; background:var(--green-light); color:var(--green); padding:8px 12px; font-size:.72rem; font-weight:800; }
 .auth-button:disabled { opacity:.55; }
+.page-nav a { font-size:.75rem; padding:9px 4px; }
+.scope-control { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 16px; }
+.scope-switch { display:flex; gap:4px; padding:4px; background:#e9eee8; border-radius:10px; }
+.scope-switch button { border:0; background:transparent; color:var(--muted); border-radius:7px; padding:8px 11px; font-size:.75rem; font-weight:800; }
+.scope-switch button.active { background:var(--white); color:var(--green); box-shadow:0 1px 4px #10241614; }
+.scope-control input { color:var(--ink); border:1px solid var(--line); border-radius:9px; background:var(--white); padding:8px; font-size:.8rem; }
+.savings-card { background:linear-gradient(135deg,#5b21b6,#7e22ce); box-shadow:0 12px 26px #7e22ce2d; margin-bottom:16px; }
+.savings-card .balance-breakdown b { font-size:.85rem; }
+.category-breakdown { margin-top:13px; }
+.category-row { border-top:1px solid var(--line); padding:14px 0; }
+.category-row:first-child { border-top:0; }
+.category-row-top,.category-row-bottom { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.category-name { display:flex; align-items:center; gap:8px; min-width:0; font-size:.88rem; font-weight:750; }
+.category-name i { flex:none; width:9px; height:9px; border-radius:50%; }
+.category-name b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:750; }
+.category-amount { white-space:nowrap; font-weight:800; font-size:.9rem; }
+.category-row .progress-bar { margin:11px 0 8px; }
+.category-row-bottom { color:var(--muted); font-size:.7rem; }
+.savings-history { margin-top:16px; }
+.savings-history .transaction-amount { color:#7e22ce; }
+.page-note { margin:18px 2px 0; color:var(--muted); font-size:.72rem; line-height:1.45; }
+.page-note strong { color:var(--ink); }
+.goal-section { margin-top:16px; }
+.goal-form { display:grid; gap:12px; margin-top:14px; }
+.goal-form label { display:grid; gap:6px; font-size:.8rem; font-weight:750; color:var(--muted); }
+.goal-form input,.goal-form select { width:100%; border:1px solid var(--line); border-radius:9px; padding:11px; color:var(--ink); background:var(--white); outline-color:#7e22ce; }
+.goal-form .save-button { background:#7e22ce; }
+.goal-list { margin-top:16px; display:grid; gap:10px; }
+.goal-card { border:1px solid var(--line); border-radius:13px; padding:13px; }
+.goal-card.is-done { border-color:#c4b5fd; background:#faf5ff; }
+.goal-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+.goal-card-top h3 { margin-top:3px; font-size:.92rem; }
+.goal-period { color:var(--muted); font-size:.63rem; font-weight:850; letter-spacing:.05em; text-transform:uppercase; }
+.goal-card .progress-bar { margin:12px 0 9px; }
+.goal-card .progress-bar span { background:#a855f7; }
+.goal-card-bottom { display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted); font-size:.72rem; }
+.goal-card-bottom strong { color:#7e22ce; white-space:nowrap; font-size:.74rem; }
+.empty-goal { color:var(--muted); font-size:.78rem; text-align:center; padding:14px 6px; }
+.debt-summary article:first-child,.debt-summary article:last-child { border-top:1px solid var(--line); }
+.debt-summary article.sum-receivable { border-top:4px solid #075985; }
+.debt-summary article.sum-payable { border-top:4px solid #7e22ce; }
+.debt-summary article.sum-received { border-top:4px solid #16a34a; }
+.debt-summary article.sum-paid { border-top:4px solid #f59e0b; }
+.debt-filter { margin:14px 0 4px; }
+.debt-filter button { flex:1; }
+.settled-badge { color:#15803d !important; }
+.settled-mark { color:#15803d; font-size:.72rem; font-weight:800; white-space:nowrap; }
+.debt-card.is-settled { opacity:.92; }
+.debt-card.is-settled h3 { text-decoration:none; }
+.debt-card.is-settled .progress-bar span { background:#22c55e !important; }
+.debt-card.is-settled .debt-card-heading strong { color:#15803d; }
+.payment-log { margin-top:11px; padding:10px 11px; background:var(--paper); border-radius:10px; }
+.payment-log-title { color:var(--muted); font-size:.63rem; font-weight:850; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+.payment-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:4px 0; color:var(--muted); font-size:.72rem; }
+.payment-row b { color:var(--ink); white-space:nowrap; font-size:.74rem; }
+.row-end { display:flex; align-items:center; gap:6px; }
+.row-actions { display:flex; align-items:center; gap:2px; }
+.edit-button { border:0; background:transparent; color:#9aa29c; font-size:.95rem; padding:4px 5px; border-radius:7px; line-height:1; }
+.edit-button:hover,.edit-button:focus-visible { background:var(--paper); color:var(--green); }
+.edit-button.small { font-size:.8rem; padding:2px 4px; }
+.payment-row { display:grid; grid-template-columns:1fr auto auto; }
+.danger-button { border:1px solid #fecaca; border-radius:10px; background:var(--red-light); color:var(--red); padding:11px; font-weight:800; font-size:.8rem; }
+.dialog-focus { display:flex !important; align-items:center; gap:7px; grid-auto-flow:column; justify-content:flex-start; }
+.dialog-focus input { width:auto !important; accent-color:var(--green); }
+.transaction .row-end { flex-direction:column; align-items:flex-end; gap:1px; }
+.transaction .row-actions { margin-right:-4px; }
+.transaction .delete-button { margin-left:0; }
+.goal-card-top .row-actions { align-self:flex-start; }

@@ -13,6 +13,7 @@ const dialog = $("#transactionDialog");
 let deferredInstallPrompt;
 let transactions = readTransactions();
 let customCategories = readCategories();
+let editingTransactionId = null;
 
 function dateValue(date) { return date.toISOString().slice(0, 10); }
 function monthValue(date) { return dateValue(date).slice(0, 7); }
@@ -37,21 +38,60 @@ function render() {
     const row = document.createElement("article"); row.className = `transaction ${t.type}`;
     const sign = t.type === "income" || t.type === "sales" ? "+" : "−";
     const formattedDate = new Intl.DateTimeFormat("ms-MY", { day:"numeric", month:"short", year:"numeric" }).format(new Date(`${t.date}T12:00:00`));
-    row.innerHTML = `<div class="transaction-icon">${sign}</div><div><p class="transaction-title"></p><span class="transaction-meta"></span></div><div><span class="transaction-amount">${sign}${money(t.amount)}</span><button class="delete-button" type="button" aria-label="Padam transaksi" data-id="${t.id}">×</button></div>`;
+    row.innerHTML = `<div class="transaction-icon">${sign}</div><div><p class="transaction-title"></p><span class="transaction-meta"></span></div><div class="row-end"><span class="transaction-amount">${sign}${money(t.amount)}</span><span class="row-actions"><button class="edit-button" type="button" data-edit-id="${t.id}" aria-label="Edit transaksi">✎</button><button class="delete-button" type="button" data-delete-id="${t.id}" aria-label="Padam transaksi">×</button></span></div>`;
     row.querySelector(".transaction-title").textContent = t.description;
     row.querySelector(".transaction-meta").textContent = `${t.category} · ${t.paymentMethod} · ${formattedDate}`;
     list.append(row);
   });
 }
-function setCategories(type, selectedCategory = "") { const allCategories = [...defaultCategories[type], ...(customCategories[type] || [])]; $("#category").innerHTML = ""; allCategories.forEach(category => { const option = document.createElement("option"); option.value = category; option.textContent = category; option.selected = category === selectedCategory; $("#category").append(option); }); }
-function openForm(type) { const labels = { expense: ["PERBELANJAAN", "Tambah belanja"], income: ["PENDAPATAN", "Tambah income"], savings: ["SIMPANAN", "Rekod simpanan"], sales: ["JUALAN", "Rekod jualan"] }; $("#transactionType").value = type; $("#formEyebrow").textContent = labels[type][0]; $("#formTitle").textContent = labels[type][1]; setCategories(type); $("#transactionForm").reset(); $("#transactionType").value = type; $("#transactionDate").value = dateValue(today); dialog.showModal(); $("#amount").focus(); }
+function setCategories(type, selectedCategory = "") { const allCategories = [...defaultCategories[type], ...(customCategories[type] || [])]; if (selectedCategory && !allCategories.includes(selectedCategory)) allCategories.push(selectedCategory); $("#category").innerHTML = ""; allCategories.forEach(category => { const option = document.createElement("option"); option.value = category; option.textContent = category; option.selected = category === selectedCategory; $("#category").append(option); }); }
+
+function openForm(type, existing = null) {
+  const labels = { expense: ["PERBELANJAAN", "belanja"], income: ["PENDAPATAN", "income"], savings: ["SIMPANAN", "simpanan"], sales: ["JUALAN", "jualan"] };
+  editingTransactionId = existing ? existing.id : null;
+  $("#transactionForm").reset();
+  $("#transactionType").value = type;
+  $("#formEyebrow").textContent = labels[type][0];
+  $("#formTitle").textContent = existing ? `Kemas kini ${labels[type][1]}` : `Tambah ${labels[type][1]}`;
+  $("#saveTransaction").textContent = existing ? "Kemas kini transaksi" : "Simpan transaksi";
+  setCategories(type, existing ? existing.category : "");
+  if (existing) {
+    $("#amount").value = existing.amount;
+    $("#description").value = existing.description || "";
+    $("#paymentMethod").value = existing.paymentMethod || "Cash";
+    $("#transactionDate").value = existing.date;
+  } else {
+    $("#transactionDate").value = dateValue(today);
+  }
+  dialog.showModal(); $("#amount").focus();
+}
 
 monthFilter.value = monthValue(today);
 document.querySelectorAll("[data-open-form]").forEach(button => button.addEventListener("click", () => openForm(button.dataset.openForm)));
 $("#closeDialog").addEventListener("click", () => dialog.close());
 $("#addCategory").addEventListener("click", () => { const type = $("#transactionType").value; const input = $("#newCategory"); const name = input.value.trim().replace(/\s+/g, " "); if (!name) { input.focus(); return; } const exists = [...defaultCategories[type], ...(customCategories[type] || [])].some(category => category.toLocaleLowerCase() === name.toLocaleLowerCase()); if (!exists) { customCategories[type] = [...(customCategories[type] || []), name]; saveCategories(); } setCategories(type, name); input.value = ""; });
-$("#transactionForm").addEventListener("submit", (event) => { event.preventDefault(); const type = $("#transactionType").value; const amount = Number($("#amount").value); if (!amount || amount <= 0) return; transactions.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), type, amount, description: $("#description").value.trim(), category: $("#category").value, paymentMethod: $("#paymentMethod").value, date: $("#transactionDate").value, createdAt: Date.now() }); saveTransactions(); dialog.close(); monthFilter.value = $("#transactionDate").value.slice(0,7); render(); });
-$("#transactionList").addEventListener("click", (event) => { const button = event.target.closest("[data-id]"); if (!button) return; transactions = transactions.filter(t => t.id !== button.dataset.id); saveTransactions(); render(); });
+$("#transactionForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const type = $("#transactionType").value;
+  const amount = Number($("#amount").value);
+  if (!amount || amount <= 0) return;
+  const details = { type, amount, description: $("#description").value.trim(), category: $("#category").value, paymentMethod: $("#paymentMethod").value, date: $("#transactionDate").value };
+  if (editingTransactionId) {
+    const existing = transactions.find(t => t.id === editingTransactionId);
+    if (existing) Object.assign(existing, details);
+  } else {
+    transactions.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), ...details, createdAt: Date.now() });
+  }
+  editingTransactionId = null;
+  saveTransactions(); dialog.close(); monthFilter.value = $("#transactionDate").value.slice(0,7); render();
+});
+$("#transactionList").addEventListener("click", (event) => {
+  const editButton = event.target.closest("[data-edit-id]");
+  if (editButton) { const item = transactions.find(t => t.id === editButton.dataset.editId); if (item) openForm(item.type, item); return; }
+  const deleteButton = event.target.closest("[data-delete-id]");
+  if (!deleteButton) return;
+  transactions = transactions.filter(t => t.id !== deleteButton.dataset.deleteId); saveTransactions(); render();
+});
 monthFilter.addEventListener("change", render);
 window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); deferredInstallPrompt = event; $("#installButton").hidden = false; });
 $("#installButton").addEventListener("click", async () => { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; $("#installButton").hidden = true; });

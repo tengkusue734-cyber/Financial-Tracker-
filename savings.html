@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#14532d" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css?v=10" />
+    <title>Simpanan · Financial Tracker</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar"><div><p class="eyebrow">KEWANGAN SAYA</p><h1>Simpanan</h1></div><a class="icon-button nav-home" href="index.html" aria-label="Kembali ke dashboard">⌂</a></header>
+      <nav class="page-nav" aria-label="Navigasi utama"><a href="index.html">Dashboard</a><a class="active" href="savings.html">Simpanan</a><a href="tasks.html">To-Do</a><a href="debts.html">Hutang</a></nav>
+
+      <section class="scope-control" aria-label="Pilih tempoh">
+        <div class="scope-switch" role="group" aria-label="Tempoh paparan">
+          <button type="button" class="active" data-scope="month">Bulan ini</button>
+          <button type="button" data-scope="all">Sepanjang masa</button>
+        </div>
+        <input id="savingsMonth" type="month" aria-label="Pilih bulan" />
+      </section>
+
+      <section class="balance-card savings-card" aria-labelledby="savingsTotalTitle">
+        <p id="savingsTotalTitle">Jumlah simpanan</p>
+        <strong id="savingsTotal">RM0.00</strong>
+        <div class="balance-breakdown">
+          <span><small>Bilangan rekod</small><b id="savingsCount">0</b></span>
+          <span><small>Purata sekali simpan</small><b id="savingsAverage">RM0.00</b></span>
+          <span><small>Kategori digunakan</small><b id="savingsCategoryCount">0</b></span>
+          <span><small>Simpanan terbesar</small><b id="savingsTop">—</b></span>
+        </div>
+      </section>
+
+      <section class="history-section" aria-labelledby="breakdownTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">PECAHAN</p><h2 id="breakdownTitle">Simpanan ikut kategori</h2></div>
+          <span class="count" id="breakdownScope">Bulan ini</span>
+        </div>
+        <div id="categoryBreakdown" class="category-breakdown" aria-live="polite"></div>
+      </section>
+
+      <section class="history-section goal-section" aria-labelledby="goalTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">SASARAN</p><h2 id="goalTitle">Target simpanan</h2></div>
+          <span class="count" id="goalCount">0 sasaran</span>
+        </div>
+        <form id="goalForm" class="goal-form">
+          <label>Kategori<select id="goalCategory" required></select></label>
+          <div class="two-columns">
+            <label>Sasaran (RM)<input id="goalAmount" type="number" min="1" step="0.01" inputmode="decimal" placeholder="10000.00" required /></label>
+            <label>Tempoh<select id="goalPeriod"><option value="total">Sepanjang masa</option><option value="monthly">Setiap bulan</option></select></label>
+          </div>
+          <button class="save-button" type="submit">Simpan sasaran</button>
+        </form>
+        <div id="goalList" class="goal-list" aria-live="polite"></div>
+      </section>
+
+      <section class="history-section savings-history" aria-labelledby="savingsListTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">REKOD</p><h2 id="savingsListTitle">Senarai simpanan</h2></div>
+          <span class="count" id="savingsRecordCount">0 rekod</span>
+        </div>
+        <div id="savingsList" class="transaction-list" aria-live="polite"></div>
+      </section>
+
+      <p class="page-note">Rekod di sini datang terus daripada butang <strong>Rekod Simpanan</strong> pada Dashboard. Tekan ✎ pada mana-mana rekod untuk kemas kini tarikh atau maklumatnya. Sasaran simpanan disimpan berasingan daripada rekod transaksi.</p>
+    </main>
+
+    <dialog id="savingsDialog" class="transaction-dialog"><form id="savingsEditForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2>Edit rekod simpanan</h2></div><button class="icon-button close-button" id="closeSavingsEdit" type="button" aria-label="Tutup">×</button></div><label>Jumlah (RM)<input id="editSavingsAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" /></label><label>Butiran<input id="editSavingsDescription" required maxlength="60" /></label><div class="two-columns"><label>Kategori<select id="editSavingsCategory" required></select></label><label>Kaedah bayaran<select id="editSavingsMethod"><option>Cash</option><option>Debit Card</option><option>Credit Card</option><option>Online Transfer</option><option>E-Wallet</option></select></label></div><label>Tarikh<input id="editSavingsDate" required type="date" /></label><button class="save-button" type="submit">Kemas kini rekod</button><button type="button" class="danger-button" id="deleteSavings">Padam rekod ini</button></form></dialog>
+    <template id="emptyGoalTemplate">
+      <p class="empty-goal">Belum ada sasaran. Tetapkan target untuk kategori simpanan kau di atas.</p>
+    </template>
+    <template id="emptySavingsTemplate">
+      <div class="empty-state"><div>◎</div><h3>Belum ada simpanan</h3><p>Guna butang "Rekod Simpanan" pada Dashboard untuk mula menyimpan.</p></div>
+    </template>
+    <script src="savings.js?v=10"></script>
+    <script type="module" src="cloud.js?v=10"></script>
+  </body>
+</html>

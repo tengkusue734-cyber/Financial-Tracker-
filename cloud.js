@@ -18,7 +18,8 @@ const DATA_KEYS = [
   { name: "transactions", storageKey: "financial-tracker-transactions-v1", kind: "list" },
   { name: "categories",   storageKey: "financial-tracker-categories-v1",   kind: "categories" },
   { name: "debts",        storageKey: "financial-tracker-debts-v1",        kind: "list" },
-  { name: "tasks",        storageKey: "financial-tracker-tasks-v1",        kind: "list" }
+  { name: "tasks",        storageKey: "financial-tracker-tasks-v1",        kind: "list" },
+  { name: "savingsGoals", storageKey: "financial-tracker-savings-goals-v1", kind: "map" }
 ];
 DATA_KEYS.forEach(entry => { entry.stampKey = `${entry.storageKey}::updatedAt`; });
 const byStorageKey = new Map(DATA_KEYS.map(entry => [entry.storageKey, entry]));
@@ -213,10 +214,12 @@ function hasContent(entry, raw) {
   if (!raw) return false;
   if (entry.kind === "list") return parse(raw, []).length > 0;
   const value = parse(raw, {});
+  if (entry.kind === "map") return Object.keys(value).length > 0;
   return Object.values(value).some(list => Array.isArray(list) && list.length > 0);
 }
 
 function mergeData(entry, localRaw, remoteRaw) {
+  if (entry.kind === "map") return JSON.stringify({ ...parse(remoteRaw, {}), ...parse(localRaw, {}) });
   if (entry.kind === "list") {
     const merged = new Map();
     parse(remoteRaw, []).forEach(item => item && item.id && merged.set(item.id, item));

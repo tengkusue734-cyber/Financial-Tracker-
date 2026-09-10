@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=12" />
     <title>Hutang & Bayaran · Financial Tracker</title>
   </head>
   <body>
@@ -43,7 +43,7 @@
     <dialog id="paymentDialog" class="transaction-dialog"><form id="paymentForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2 id="paymentTitle">Rekod bayaran</h2></div><button class="icon-button close-button" id="closePayment" type="button" aria-label="Tutup">×</button></div><p id="paymentHelp" class="form-help"></p><label>Jumlah bayaran (RM)<input id="paymentAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></label><div class="two-columns"><label>Tarikh bayaran<input id="paymentDate" required type="date" /></label><label>Nota<input id="paymentNote" maxlength="80" placeholder="Contoh: Bayaran pertama" /></label></div><button class="save-button" id="savePayment" type="submit">Simpan bayaran</button><button type="button" class="danger-button" id="deletePayment" hidden>Padam bayaran ini</button></form></dialog>
     <dialog id="debtDialog" class="transaction-dialog"><form id="debtEditForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2>Edit rekod hutang</h2></div><button class="icon-button close-button" id="closeDebtEdit" type="button" aria-label="Tutup">×</button></div><label>Jenis rekod<select id="editDebtType"><option value="receivable">Orang berhutang dengan saya</option><option value="payable">Saya berhutang dengan orang</option></select></label><div class="two-columns"><label>Nama orang / syarikat<input id="editDebtName" required maxlength="60" /></label><label>Jumlah asal (RM)<input id="editDebtAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" /></label></div><div class="two-columns"><label>Tarikh<input id="editDebtDate" required type="date" /></label><label>Nota<input id="editDebtNote" maxlength="80" /></label></div><p id="editDebtHelp" class="form-help"></p><button class="save-button" type="submit">Kemas kini rekod</button><button type="button" class="danger-button" id="deleteDebt">Padam rekod hutang</button></form></dialog>
     <template id="emptyDebtTemplate"><div class="empty-state"><div>◎</div><h3>Belum ada rekod hutang</h3><p>Tambah rekod untuk mula menjejak bayaran.</p></div></template>
-    <script src="debts.js?v=11"></script>
-    <script type="module" src="cloud.js?v=11"></script>
+    <script src="debts.js?v=12"></script>
+    <script type="module" src="cloud.js?v=12"></script>
   </body>
 </html>

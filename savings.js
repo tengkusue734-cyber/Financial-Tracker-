@@ -23,7 +23,11 @@ function readGoals() {
     const result = {};
     Object.entries(saved).forEach(([category, value]) => {
       const goal = typeof value === "number" ? { amount: value, period: "total" } : value;
-      if (goal && Number(goal.amount) > 0) result[category] = { amount: Number(goal.amount), period: goal.period === "monthly" ? "monthly" : "total" };
+      if (!goal || !(Number(goal.amount) > 0)) return;
+      const months = Math.max(0, Math.floor(Number(goal.months) || 0));
+      let period = ["monthly", "plan", "total"].includes(goal.period) ? goal.period : "total";
+      if (period === "plan" && !months) period = "total";
+      result[category] = { amount: Number(goal.amount), period, months, startMonth: goal.startMonth || currentMonth() };
     });
     return result;
   } catch { return {}; }
@@ -52,6 +56,15 @@ function knownCategories() {
   const used = allSavingsRecords().map(item => item.category || "Lain-lain");
   return [...new Set([...defaultSavingsCategories, ...custom, ...used, ...Object.keys(readGoals())])];
 }
+function currentMonth() { return new Date().toISOString().slice(0, 7); }
+function addMonths(ym, count) { const [year, month] = ym.split("-").map(Number); const date = new Date(year, month - 1 + count, 1); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; }
+function monthGap(from, to) { const [fy, fm] = from.split("-").map(Number); const [ty, tm] = to.split("-").map(Number); return (ty - fy) * 12 + (tm - fm); }
+function planInfo(goal, saved) {
+  const endMonth = addMonths(goal.startMonth, goal.months - 1);
+  const monthsLeft = Math.max(0, monthGap(currentMonth(), endMonth) + 1);
+  const shortfall = Math.max(0, goal.amount - saved);
+  return { endMonth, monthsLeft, shortfall, perMonth: monthsLeft > 0 ? shortfall / monthsLeft : shortfall, baseline: goal.amount / goal.months };
+}
 function monthLabel(value) { return new Intl.DateTimeFormat("ms-MY", { month: "long", year: "numeric" }).format(new Date(`${value}-01T12:00:00`)); }
 
 function renderGoals() {
@@ -77,10 +90,26 @@ function renderGoals() {
   rows.forEach(row => {
     const done = row.percent >= 100;
     const shortfall = Math.max(0, row.goal.amount - row.saved);
+    const plan = row.goal.period === "plan" ? planInfo(row.goal, row.saved) : null;
+    const eyebrow = row.goal.period === "monthly" ? `Setiap bulan · ${monthLabel(selectedMonth)}`
+      : plan ? `${row.goal.months} bulan · sehingga ${monthLabel(plan.endMonth)}`
+      : "Terkumpul tanpa had masa";
+    let status;
+    if (done) status = "Tercapai 🎉";
+    else if (plan && plan.monthsLeft === 0) status = `Tempoh tamat · kurang ${savingsMoney(shortfall)}`;
+    else status = `${row.percent.toFixed(0)}% · baki ${savingsMoney(shortfall)}`;
+
     const card = document.createElement("article");
-    card.className = `goal-card${done ? " is-done" : ""}`;
-    card.innerHTML = `<div class="goal-card-top"><div><span class="goal-period">${row.goal.period === "monthly" ? `Setiap bulan · ${monthLabel(selectedMonth)}` : "Sepanjang masa"}</span><h3></h3></div><span class="row-actions"><button type="button" class="edit-button" data-edit-goal="${encodeURIComponent(row.category)}" aria-label="Edit sasaran">✎</button><button type="button" class="delete-button" data-goal="${encodeURIComponent(row.category)}" aria-label="Padam sasaran">×</button></span></div><div class="progress-bar"><span style="width:${Math.min(100, row.percent).toFixed(1)}%"></span></div><div class="goal-card-bottom"><span>${savingsMoney(row.saved)} daripada ${savingsMoney(row.goal.amount)}</span><strong>${done ? "Tercapai 🎉" : `${row.percent.toFixed(0)}% · baki ${savingsMoney(shortfall)}`}</strong></div>`;
+    card.className = `goal-card${done ? " is-done" : plan && plan.monthsLeft === 0 ? " is-late" : ""}`;
+    card.innerHTML = `<div class="goal-card-top"><div><span class="goal-period">${eyebrow}</span><h3></h3></div><span class="row-actions"><button type="button" class="edit-button" data-edit-goal="${encodeURIComponent(row.category)}" aria-label="Edit sasaran">✎</button><button type="button" class="delete-button" data-goal="${encodeURIComponent(row.category)}" aria-label="Padam sasaran">×</button></span></div><div class="progress-bar"><span style="width:${Math.min(100, row.percent).toFixed(1)}%"></span></div><div class="goal-card-bottom"><span>${savingsMoney(row.saved)} daripada ${savingsMoney(row.goal.amount)}</span><strong>${status}</strong></div>`;
     card.querySelector("h3").textContent = row.category;
+
+    if (plan && !done && plan.monthsLeft > 0) {
+      const pace = document.createElement("div");
+      pace.className = "goal-pace";
+      pace.innerHTML = `<span>Perlu simpan</span><b>${savingsMoney(plan.perMonth)} / bulan</b><span>${plan.monthsLeft} bulan lagi</span>`;
+      card.append(pace);
+    }
     list.append(card);
   });
 }
@@ -158,10 +187,15 @@ save$("#goalForm").addEventListener("submit", event => {
   const category = save$("#goalCategory").value;
   if (!category || !amount || amount <= 0) return;
   const goals = readGoals();
-  goals[category] = { amount, period: save$("#goalPeriod").value };
+  const period = save$("#goalPeriod").value;
+  const months = Math.max(0, Math.floor(Number(save$("#goalMonths").value) || 0));
+  if (period === "plan" && !months) { save$("#goalPreview").textContent = "Masukkan bilangan bulan untuk sasaran ini."; return; }
+  const previous = goals[category];
+  const keepStart = previous && previous.period === "plan" && previous.months === months ? previous.startMonth : currentMonth();
+  goals[category] = period === "plan" ? { amount, period, months, startMonth: keepStart } : { amount, period };
   saveGoals(goals);
-  save$("#goalAmount").value = "";
-  renderGoals();
+  save$("#goalAmount").value = ""; save$("#goalMonths").value = "";
+  renderGoals(); refreshGoalForm();
 });
 save$("#goalList").addEventListener("click", event => {
   const button = event.target.closest("[data-goal]");
@@ -221,8 +255,29 @@ save$("#goalList").addEventListener("click", event => {
   save$("#goalCategory").value = category;
   save$("#goalAmount").value = goal.amount;
   save$("#goalPeriod").value = goal.period;
+  save$("#goalMonths").value = goal.months || "";
+  refreshGoalForm();
   save$("#goalAmount").focus();
   save$("#goalAmount").scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+/* ---------- Medan tempoh + pratonton ---------- */
+function refreshGoalForm() {
+  const isPlan = save$("#goalPeriod").value === "plan";
+  save$("#goalMonthsField").hidden = !isPlan;
+  save$("#goalMonths").required = isPlan;
+  const amount = Number(save$("#goalAmount").value);
+  const months = Math.floor(Number(save$("#goalMonths").value) || 0);
+  if (!isPlan || !amount || !months) { save$("#goalPreview").textContent = isPlan ? "Masukkan jumlah dan bilangan bulan untuk lihat berapa perlu disimpan sebulan." : ""; return; }
+  const category = save$("#goalCategory").value;
+  const saved = allSavingsRecords().filter(item => (item.category || "Lain-lain") === category).reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const shortfall = Math.max(0, amount - saved);
+  const endMonth = addMonths(currentMonth(), months - 1);
+  save$("#goalPreview").textContent = `Perlu simpan ${savingsMoney(shortfall / months)} sebulan selama ${months} bulan (sehingga ${monthLabel(endMonth)}). Simpanan ${category} sekarang: ${savingsMoney(saved)}.`;
+}
+["#goalPeriod", "#goalAmount", "#goalMonths", "#goalCategory"].forEach(selector => {
+  save$(selector).addEventListener("input", refreshGoalForm);
+  save$(selector).addEventListener("change", refreshGoalForm);
 });
 
 /* ---------- Tambah kategori simpanan baharu ---------- */
@@ -246,3 +301,4 @@ save$("#addEditCategory").addEventListener("click", () => {
 document.addEventListener("ft-cloud-data", renderPage);
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js"));
 renderPage();
+refreshGoalForm();

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=12" />
     <title>Simpanan · Financial Tracker</title>
   </head>
   <body>
@@ -49,8 +49,10 @@
           <label>Kategori<select id="goalCategory" required></select><span class="new-category"><input id="newGoalCategory" type="text" maxlength="30" placeholder="Kategori baru" aria-label="Kategori simpanan baru" /><button id="addGoalCategory" type="button">+ Tambah</button></span></label>
           <div class="two-columns">
             <label>Sasaran (RM)<input id="goalAmount" type="number" min="1" step="0.01" inputmode="decimal" placeholder="10000.00" required /></label>
-            <label>Tempoh<select id="goalPeriod"><option value="total">Sepanjang masa</option><option value="monthly">Setiap bulan</option></select></label>
+            <label>Jenis sasaran<select id="goalPeriod"><option value="plan">Capai dalam tempoh</option><option value="total">Terkumpul tanpa had masa</option><option value="monthly">Setiap bulan</option></select></label>
           </div>
+          <label id="goalMonthsField">Tempoh simpanan (bulan)<input id="goalMonths" type="number" min="1" max="600" step="1" inputmode="numeric" placeholder="Contoh: 12" /></label>
+          <p id="goalPreview" class="form-help"></p>
           <button class="save-button" type="submit">Simpan sasaran</button>
         </form>
         <div id="goalList" class="goal-list" aria-live="polite"></div>
@@ -74,7 +76,7 @@
     <template id="emptySavingsTemplate">
       <div class="empty-state"><div>◎</div><h3>Belum ada simpanan</h3><p>Guna butang "Rekod Simpanan" pada Dashboard untuk mula menyimpan.</p></div>
     </template>
-    <script src="savings.js?v=11"></script>
-    <script type="module" src="cloud.js?v=11"></script>
+    <script src="savings.js?v=12"></script>
+    <script type="module" src="cloud.js?v=12"></script>
   </body>
 </html>

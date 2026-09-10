@@ -101,3 +101,10 @@ h1,h2,h3,p { margin:0; } h1 { font-size:1.45rem; letter-spacing:-.04em; } h2 { f
 .goal-card-top .row-actions { align-self:flex-start; }
 .new-category { display:flex; gap:5px; margin-top:2px; }
 .new-category input { min-width:0; padding:8px !important; font-size:.75rem !important; }
+.goal-pace { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; padding:9px 11px; background:#faf5ff; border:1px dashed #d8b4fe; border-radius:10px; color:var(--muted); font-size:.7rem; }
+.goal-pace b { color:#6b21a8; font-size:.9rem; letter-spacing:-.02em; }
+.goal-card.is-late { border-color:#fecaca; background:#fff8f7; }
+.goal-card.is-late .goal-card-bottom strong { color:var(--red); }
+.goal-card.is-late .progress-bar span { background:#f87171; }
+#goalPreview { line-height:1.45; }
+[hidden] { display:none !important; }

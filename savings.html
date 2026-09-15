@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#14532d" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css?v=12" />
+    <link rel="icon" href="favicon.ico?v=14" sizes="any" />
+    <link rel="icon" href="icon.svg?v=14" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=14" />
+    <link rel="stylesheet" href="styles.css?v=14" />
     <title>Simpanan · Financial Tracker</title>
   </head>
   <body>
@@ -38,6 +41,20 @@
           <span class="count" id="breakdownScope">Bulan ini</span>
         </div>
         <div id="categoryBreakdown" class="category-breakdown" aria-live="polite"></div>
+      </section>
+
+      <section class="history-section monthly-section" aria-labelledby="monthlyTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">ISI CEPAT</p><h2 id="monthlyTitle">Simpanan bulan <span id="monthlyMonthLabel">ini</span></h2></div>
+          <span class="count" id="monthlyTotal">RM0.00</span>
+        </div>
+        <p class="form-help">Masukkan jumlah yang kau simpan bulan ini bagi setiap kategori, kemudian tekan Simpan semua.</p>
+        <div id="monthlyGrid" class="monthly-grid" aria-live="polite"></div>
+        <div class="monthly-actions">
+          <label>Kaedah bayaran<select id="monthlyMethod"><option>Online Transfer</option><option>Cash</option><option>Debit Card</option><option>Credit Card</option><option>E-Wallet</option></select></label>
+          <button class="save-button" id="saveMonthly" type="button">Simpan semua</button>
+        </div>
+        <p id="monthlyStatus" class="form-help"></p>
       </section>
 
       <section class="history-section goal-section" aria-labelledby="goalTitle">
@@ -76,7 +93,7 @@
     <template id="emptySavingsTemplate">
       <div class="empty-state"><div>◎</div><h3>Belum ada simpanan</h3><p>Guna butang "Rekod Simpanan" pada Dashboard untuk mula menyimpan.</p></div>
     </template>
-    <script src="savings.js?v=12"></script>
-    <script type="module" src="cloud.js?v=12"></script>
+    <script src="savings.js?v=14"></script>
+    <script type="module" src="cloud.js?v=14"></script>
   </body>
 </html>

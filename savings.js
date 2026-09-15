@@ -171,7 +171,7 @@ function renderSavings() {
   });
 }
 
-function renderPage() { renderSavings(); renderGoals(); }
+function renderPage() { renderSavings(); renderGoals(); renderMonthly(); }
 
 save$("#savingsMonth").value = new Date().toISOString().slice(0, 7);
 save$("#savingsMonth").addEventListener("change", renderPage);
@@ -259,6 +259,78 @@ save$("#goalList").addEventListener("click", event => {
   refreshGoalForm();
   save$("#goalAmount").focus();
   save$("#goalAmount").scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+
+/* ---------- Isi cepat: simpanan bulanan ikut kategori ---------- */
+function monthlyDateFor(month) {
+  const todayIso = new Date().toISOString().slice(0, 10);
+  return todayIso.startsWith(month) ? todayIso : `${month}-01`;
+}
+function monthlyRecordOf(list, category, month) {
+  return list.find(item => item.type === "savings" && item.source === "monthly" && (item.category || "Lain-lain") === category && (item.date || "").startsWith(month));
+}
+
+function renderMonthly() {
+  const month = save$("#savingsMonth").value;
+  const list = readAllTransactions();
+  save$("#monthlyMonthLabel").textContent = monthLabel(month);
+  const grid = save$("#monthlyGrid");
+  grid.innerHTML = "";
+  let total = 0;
+
+  knownCategories().forEach(category => {
+    const quick = monthlyRecordOf(list, category, month);
+    const others = list.filter(item => item.type === "savings" && (item.category || "Lain-lain") === category && (item.date || "").startsWith(month) && item !== quick);
+    const otherTotal = others.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    total += Number(quick ? quick.amount : 0) + otherTotal;
+
+    const row = document.createElement("div");
+    row.className = "monthly-row";
+    row.innerHTML = `<div class="monthly-name"><b></b>${otherTotal ? `<span>+ ${savingsMoney(otherTotal)} rekod lain</span>` : ""}</div><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" data-monthly="${encodeURIComponent(category)}" aria-label="Simpanan ${category}" />`;
+    row.querySelector("b").textContent = category;
+    row.querySelector("input").value = quick ? quick.amount : "";
+    grid.append(row);
+  });
+
+  save$("#monthlyTotal").textContent = savingsMoney(total);
+}
+
+save$("#saveMonthly").addEventListener("click", () => {
+  const month = save$("#savingsMonth").value;
+  const method = save$("#monthlyMethod").value;
+  const list = readAllTransactions();
+  let added = 0, updated = 0, removed = 0, sum = 0;
+
+  save$("#monthlyGrid").querySelectorAll("[data-monthly]").forEach(input => {
+    const category = decodeURIComponent(input.dataset.monthly);
+    const value = Number(input.value);
+    const quick = monthlyRecordOf(list, category, month);
+    if (!value || value <= 0) {
+      if (quick) { list.splice(list.indexOf(quick), 1); removed += 1; }
+      return;
+    }
+    sum += value;
+    if (quick) {
+      if (Number(quick.amount) !== value || quick.paymentMethod !== method) updated += 1;
+      quick.amount = value;
+      quick.paymentMethod = method;
+      quick.category = category;
+    } else {
+      list.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + category, type: "savings", amount: value, description: `Simpanan ${monthLabel(month)}`, category, paymentMethod: method, date: monthlyDateFor(month), createdAt: Date.now(), source: "monthly" });
+      added += 1;
+    }
+  });
+
+  writeTransactions(list);
+  const parts = [];
+  if (added) parts.push(`${added} rekod baharu`);
+  if (updated) parts.push(`${updated} dikemas kini`);
+  if (removed) parts.push(`${removed} dibuang`);
+  save$("#monthlyStatus").textContent = parts.length
+    ? `${parts.join(" · ")} — jumlah ${savingsMoney(sum)} untuk ${monthLabel(month)}.`
+    : "Tiada perubahan.";
+  renderPage();
 });
 
 /* ---------- Medan tempoh + pratonton ---------- */

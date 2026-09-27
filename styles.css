@@ -120,3 +120,16 @@ h1,h2,h3,p { margin:0; } h1 { font-size:1.45rem; letter-spacing:-.04em; } h2 { f
 .monthly-actions select { width:100%; border:1px solid var(--line); border-radius:9px; padding:11px; background:var(--white); color:var(--ink); }
 .monthly-actions .save-button { margin-top:0; background:#7e22ce; }
 #monthlyStatus:empty { display:none; }
+.sub-chip { display:grid; place-items:center; min-width:30px; height:19px; padding:0 6px; border-radius:99px; background:#e9eee8; color:var(--muted); font-size:.6rem; font-weight:850; }
+.sub-chip.is-done { background:var(--green-light); color:var(--green); }
+.subtasks { display:grid; gap:4px; margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); }
+.sub-row { display:flex; align-items:flex-start; justify-content:space-between; gap:5px; }
+.sub-row label { display:flex; align-items:flex-start; gap:6px; font-size:.68rem; line-height:1.35; color:var(--ink); cursor:pointer; }
+.sub-row input[type="checkbox"] { flex:none; width:14px; height:14px; margin-top:1px; accent-color:var(--green); }
+.sub-row.is-done label { color:var(--muted); text-decoration:line-through; }
+.sub-del { flex:none; border:0; background:transparent; color:#b8c0ba; font-size:.9rem; line-height:1; padding:0 2px; }
+.sub-del:hover { color:var(--red); }
+.sub-add { width:100%; border:1px dashed var(--line); border-radius:7px; background:transparent; padding:6px 7px; font-size:.66rem; color:var(--ink); margin-top:2px; }
+.sub-add::placeholder { color:#9aa29c; }
+.sub-add:focus { border-style:solid; border-color:var(--green); outline:none; background:var(--white); }
+.sub-hint { margin-top:7px; color:var(--green); font-size:.63rem; font-weight:800; }

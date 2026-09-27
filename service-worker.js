@@ -1,4 +1,4 @@
-const CACHE = "financial-tracker-v14";
+const CACHE = "financial-tracker-v15";
 const ASSETS = ["./", "./index.html", "./debts.html", "./tasks.html", "./savings.html", "./styles.css", "./app.js", "./debts.js", "./tasks.js", "./savings.js", "./cloud.js", "./firebase-config.js", "./manifest.json", "./icon.svg", "./favicon.ico", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", event => { self.skipWaiting(); event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))); });
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));

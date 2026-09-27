@@ -10,6 +10,20 @@ function loadTasks() { try { return JSON.parse(localStorage.getItem(TASK_STORAGE
 function saveTasks() { localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks)); }
 function dueLabel(date) { return date ? new Intl.DateTimeFormat("ms-MY", { day: "numeric", month: "short" }).format(new Date(`${date}T12:00:00`)) : "—"; }
 function isOverdue(task) { return task.status !== "complete" && (task.dueDate || "") < todayTaskDate; }
+function subsOf(task) { return Array.isArray(task.subtasks) ? task.subtasks : []; }
+function subsDone(task) { return subsOf(task).filter(sub => sub.done).length; }
+function newSubId() { return crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2); }
+function findTask(id) { return tasks.find(item => item.id === id); }
+
+function subtaskMarkup(task) {
+  const subs = subsOf(task);
+  const rows = subs.map(sub => `<div class="sub-row${sub.done ? " is-done" : ""}">
+      <label><input type="checkbox" data-sub="${sub.id}" data-task="${task.id}" ${sub.done ? "checked" : ""} /><span></span></label>
+      <button type="button" class="sub-del" data-subdel="${sub.id}" data-task="${task.id}" aria-label="Buang sub-task">×</button>
+    </div>`).join("");
+  return `<div class="subtasks">${rows}<input class="sub-add" type="text" maxlength="80" placeholder="+ Tambah sub-task" data-subadd="${task.id}" aria-label="Tambah sub-task" /></div>`;
+}
+
 function emptyList(container) { container.append(task$("#emptyTaskTemplate").content.cloneNode(true)); }
 
 function renderTasks() {
@@ -23,15 +37,52 @@ function renderTasks() {
     listTasks.forEach(task => {
       const card = document.createElement("article"); card.className = `task-card ${task.focus ? "is-focus" : ""} ${isOverdue(task) ? "is-overdue" : ""}`;
       const statusOptions = statuses.map(value => `<option value="${value}" ${task.status === value ? "selected" : ""}>${value[0].toUpperCase() + value.slice(1)}</option>`).join("");
-      card.innerHTML = `<div class="task-card-top"><span class="task-marker">${task.focus ? "★ Fokus hari ini" : isOverdue(task) ? "Lewat" : `Sebelum ${dueLabel(task.dueDate)}`}</span><span class="row-actions"><select class="task-status-select" data-id="${task.id}" aria-label="Tukar status">${statusOptions}</select><button class="edit-button" type="button" data-edit-task="${task.id}" aria-label="Edit task">✎</button></span></div><h3></h3><p class="task-note"></p><div class="task-card-bottom"><span>Tarikh akhir: ${dueLabel(task.dueDate)}</span><label class="small-focus"><input type="checkbox" data-focus-id="${task.id}" ${task.focus ? "checked" : ""} /> Fokus</label></div>`;
-      card.querySelector("h3").textContent = task.title; card.querySelector(".task-note").textContent = task.note || "Tiada nota"; list.append(card);
+      const subs = subsOf(task);
+      const allDone = subs.length > 0 && subsDone(task) === subs.length;
+      const subChip = subs.length ? `<span class="sub-chip${allDone ? " is-done" : ""}">${subsDone(task)}/${subs.length}</span>` : "";
+      card.innerHTML = `<div class="task-card-top"><span class="task-marker">${task.focus ? "★ Fokus hari ini" : isOverdue(task) ? "Lewat" : `Sebelum ${dueLabel(task.dueDate)}`}</span><span class="row-actions">${subChip}<select class="task-status-select" data-id="${task.id}" aria-label="Tukar status">${statusOptions}</select><button class="edit-button" type="button" data-edit-task="${task.id}" aria-label="Edit task">✎</button></span></div><h3></h3><p class="task-note"></p>${subtaskMarkup(task)}${allDone && task.status !== "complete" ? `<p class="sub-hint">Semua sub-task siap — tukar status kepada Complete?</p>` : ""}<div class="task-card-bottom"><span>Tarikh akhir: ${dueLabel(task.dueDate)}</span><label class="small-focus"><input type="checkbox" data-focus-id="${task.id}" ${task.focus ? "checked" : ""} /> Fokus</label></div>`;
+      card.querySelector("h3").textContent = task.title;
+      card.querySelector(".task-note").textContent = task.note || "Tiada nota";
+      card.querySelectorAll(".sub-row").forEach((row, index) => { row.querySelector("span").textContent = subs[index].title; });
+      list.append(card);
     });
   });
 }
 
 task$("#taskDueDate").value = todayTaskDate;
 task$("#taskForm").addEventListener("submit", event => { event.preventDefault(); tasks.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), title: task$("#taskTitle").value.trim(), status: task$("#taskStatus").value, dueDate: task$("#taskDueDate").value, focus: task$("#taskFocus").checked, note: task$("#taskNote").value.trim(), createdAt: Date.now() }); saveTasks(); event.target.reset(); task$("#taskDueDate").value = todayTaskDate; renderTasks(); });
-task$(".task-board").addEventListener("change", event => { const statusControl = event.target.closest("[data-id]"); const focusControl = event.target.closest("[data-focus-id]"); if (statusControl) { const task = tasks.find(item => item.id === statusControl.dataset.id); if (task) { task.status = statusControl.value; if (task.status === "complete") task.focus = false; saveTasks(); renderTasks(); } } if (focusControl) { const task = tasks.find(item => item.id === focusControl.dataset.focusId); if (task) { task.focus = focusControl.checked; saveTasks(); renderTasks(); } } });
+task$(".task-board").addEventListener("change", event => {
+  const subBox = event.target.closest("[data-sub]");
+  if (subBox) {
+    const task = findTask(subBox.dataset.task);
+    const sub = task && subsOf(task).find(item => item.id === subBox.dataset.sub);
+    if (sub) { sub.done = subBox.checked; saveTasks(); renderTasks(); }
+    return;
+  } const statusControl = event.target.closest("[data-id]"); const focusControl = event.target.closest("[data-focus-id]"); if (statusControl) { const task = tasks.find(item => item.id === statusControl.dataset.id); if (task) { task.status = statusControl.value; if (task.status === "complete") task.focus = false; saveTasks(); renderTasks(); } } if (focusControl) { const task = tasks.find(item => item.id === focusControl.dataset.focusId); if (task) { task.focus = focusControl.checked; saveTasks(); renderTasks(); } } });
+
+/* ---------- Sub-task ---------- */
+task$(".task-board").addEventListener("keydown", event => {
+  const input = event.target.closest("[data-subadd]");
+  if (!input || event.key !== "Enter") return;
+  event.preventDefault();
+  const title = input.value.trim();
+  const task = findTask(input.dataset.subadd);
+  if (!task || !title) return;
+  if (!Array.isArray(task.subtasks)) task.subtasks = [];
+  task.subtasks.push({ id: newSubId(), title, done: false });
+  saveTasks();
+  renderTasks();
+  const again = document.querySelector(`[data-subadd="${task.id}"]`);
+  if (again) again.focus();
+});
+task$(".task-board").addEventListener("click", event => {
+  const button = event.target.closest("[data-subdel]");
+  if (!button) return;
+  const task = findTask(button.dataset.task);
+  if (!task) return;
+  task.subtasks = subsOf(task).filter(sub => sub.id !== button.dataset.subdel);
+  saveTasks(); renderTasks();
+});
 
 /* ---------- Edit task ---------- */
 task$(".task-board").addEventListener("click", event => {

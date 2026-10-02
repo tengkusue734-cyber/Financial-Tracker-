@@ -6,6 +6,14 @@ let tasks = loadTasks();
 let editingTaskId = null;
 let confirmDeleteTask = false;
 
+/* ---------- Pilihan paparan (bukan data — kunci berasingan, tidak disegerakkan) ---------- */
+const TASK_UI_KEY = "financial-tracker-ui-tasks-v1";
+const COMPLETE_PREVIEW = 4;
+function loadTaskUi() { try { return JSON.parse(localStorage.getItem(TASK_UI_KEY)) || {}; } catch { return {}; } }
+function saveTaskUi() { try { localStorage.setItem(TASK_UI_KEY, JSON.stringify({ completeOpen })); } catch {} }
+let completeOpen = loadTaskUi().completeOpen === true;
+let completeShowAll = false;
+
 function loadTasks() { try { return JSON.parse(localStorage.getItem(TASK_STORAGE_KEY)) || []; } catch { return []; } }
 function saveTasks() { localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks)); }
 function dueLabel(date) { return date ? new Intl.DateTimeFormat("ms-MY", { day: "numeric", month: "short" }).format(new Date(`${date}T12:00:00`)) : "—"; }
@@ -54,8 +62,36 @@ function renderTasks() {
   task$("#urgentCount").textContent = tasks.filter(task => task.status === "urgent").length;
   task$("#waitingCount").textContent = tasks.filter(task => task.status === "waiting").length;
   statuses.forEach(status => {
-    const list = task$(`#${status}Tasks`); const listTasks = tasks.filter(task => task.status === status).sort((a,b) => (a.dueDate || "").localeCompare(b.dueDate || "") || b.createdAt - a.createdAt); task$(`#${status}Label`).textContent = listTasks.length; list.innerHTML = "";
+    const list = task$(`#${status}Tasks`);
+    const done = status === "complete";
+    const all = tasks.filter(task => task.status === status).sort(done
+      ? (a,b) => (b.dueDate || "").localeCompare(a.dueDate || "") || (b.createdAt || 0) - (a.createdAt || 0)
+      : (a,b) => (a.dueDate || "").localeCompare(b.dueDate || "") || b.createdAt - a.createdAt);
+    task$(`#${status}Label`).textContent = all.length;
+    list.innerHTML = "";
+
+    let listTasks = all;
+    let hiddenCount = 0;
+    if (done) {
+      const column = list.closest(".task-column");
+      const toggle = task$("#completeToggle");
+      if (column) column.classList.toggle("is-collapsed", !completeOpen);
+      if (toggle) {
+        toggle.textContent = completeOpen ? "Sembunyi" : (all.length ? `Tunjuk ${all.length}` : "Tunjuk");
+        toggle.setAttribute("aria-expanded", String(completeOpen));
+      }
+      list.hidden = !completeOpen;
+      if (!completeOpen) return;
+      if (!completeShowAll && all.length > COMPLETE_PREVIEW) {
+        hiddenCount = all.length - COMPLETE_PREVIEW;
+        listTasks = all.slice(0, COMPLETE_PREVIEW);
+      }
+    }
     if (!listTasks.length) return emptyList(list);
+    const afterList = () => {
+      if (hiddenCount) list.insertAdjacentHTML("beforeend", `<button type="button" class="col-more" data-completemore="1">Tunjuk ${hiddenCount} lagi</button>`);
+      else if (done && completeShowAll && all.length > COMPLETE_PREVIEW) list.insertAdjacentHTML("beforeend", '<button type="button" class="col-more" data-completeless="1">Tunjuk kurang</button>');
+    };
     listTasks.forEach(task => {
       const card = document.createElement("article"); card.className = `task-card ${task.focus ? "is-focus" : ""} ${isOverdue(task) ? "is-overdue" : ""}`;
       const statusOptions = statuses.map(value => `<option value="${value}" ${task.status === value ? "selected" : ""}>${value[0].toUpperCase() + value.slice(1)}</option>`).join("");
@@ -69,6 +105,7 @@ function renderTasks() {
       fillSubList(card.querySelector(".sub-list"), task);
       list.append(card);
     });
+    afterList();
   });
 }
 
@@ -211,6 +248,18 @@ task$("#deleteTask").addEventListener("click", () => {
   if (!confirmDeleteTask) { confirmDeleteTask = true; task$("#deleteTask").textContent = "Tekan sekali lagi untuk padam"; return; }
   tasks = tasks.filter(item => item.id !== editingTaskId);
   saveTasks(); task$("#taskDialog").close(); editingTaskId = null; confirmDeleteTask = false; renderTasks();
+});
+
+task$("#completeToggle").addEventListener("click", () => {
+  completeOpen = !completeOpen;
+  if (!completeOpen) completeShowAll = false;
+  saveTaskUi();
+  renderTasks();
+  if (completeOpen) task$("#completeToggle").closest(".task-column").scrollIntoView({ block: "nearest", behavior: "smooth" });
+});
+task$(".task-board").addEventListener("click", event => {
+  if (event.target.closest("[data-completemore]")) { completeShowAll = true; renderTasks(); return; }
+  if (event.target.closest("[data-completeless]")) { completeShowAll = false; renderTasks(); }
 });
 
 document.addEventListener("ft-cloud-data", () => { tasks = loadTasks(); renderTasks(); });

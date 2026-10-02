@@ -460,7 +460,23 @@ h3{font-size:.98rem; font-weight:750;}
 }
 @media (min-width:560px){ .task-options{grid-template-columns:auto 1fr;} }
 .task-options .focus-option input{width:auto;}
-.task-board{display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
+.task-board{display:grid; grid-template-columns:minmax(0,1fr); gap:12px; align-items:start;}
+.task-column-title .col-head{
+  display:flex; align-items:center; gap:8px; min-width:0; width:auto; height:auto;
+  padding:0; background:none; border-radius:0; font-size:inherit; font-weight:inherit;
+}
+.col-toggle{
+  border:0; border-radius:99px; background:var(--green-light); color:var(--green-deep);
+  padding:6px 12px; font-size:.68rem; font-weight:850; white-space:nowrap;
+}
+.col-toggle:hover{background:#c5f5d6;}
+.task-column.is-collapsed > p{display:none;}
+.task-column.is-collapsed .task-column-title{margin-bottom:0;}
+.col-more{
+  width:100%; margin-top:2px; border:1px dashed var(--line); border-radius:var(--r-xs);
+  background:transparent; color:var(--muted); padding:10px; font-size:.7rem; font-weight:800;
+}
+.col-more:hover{border-style:solid; border-color:var(--green); color:var(--green-deep); background:#f6fdf8;}
 .task-column{
   border:1px solid var(--line); border-radius:var(--r-l); padding:14px; background:var(--white);
   min-width:0; box-shadow:var(--sh-2); position:relative; overflow:hidden;
@@ -560,7 +576,7 @@ h3{font-size:.98rem; font-weight:750;}
   }
   .page-nav a::before{width:17px; height:17px;}
   .page-nav a.active{background:var(--white); color:var(--green-deep); box-shadow:var(--sh-1);}
-  .app-shell{padding:34px 22px 56px;}
+  .app-shell{width:min(100%, 900px); padding:34px 24px 56px;}
   .auth-bar{margin-top:0;}
   h1{font-size:1.7rem;}
   .balance-card{padding:30px;}
@@ -573,6 +589,67 @@ h3{font-size:.98rem; font-weight:750;}
 @media (min-width:1000px){
   .task-board{grid-template-columns:repeat(4,minmax(0,1fr));}
   .task-overview article{padding:18px;}
+}
+
+/* ==========================================================================
+   Susun atur dua lajur untuk skrin laptop — supaya ruang tepi tidak kosong
+   ========================================================================== */
+@media (min-width:1040px){
+  .app-shell{width:min(100% - 48px, 1200px); padding:36px 0 64px;}
+  .task-shell{width:min(100% - 48px, 1320px);}
+
+  .dash-shell,.savings-shell,.debt-shell,.task-shell{
+    display:grid; align-items:start; gap:18px 22px;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);
+  }
+  .task-shell{grid-template-columns:minmax(300px,0.78fr) minmax(0,2fr);}
+  .dash-shell > *,.savings-shell > *,.debt-shell > *,.task-shell > *{margin:0 !important;}
+
+  /* Baris penuh pada setiap page */
+  .dash-shell > .topbar,.dash-shell > .page-nav,.dash-shell > .auth-bar,.dash-shell > .month-control,
+  .savings-shell > .topbar,.savings-shell > .page-nav,.savings-shell > .auth-bar,
+  .savings-shell > .scope-control,.savings-shell > .balance-card,.savings-shell > .page-note,
+  .debt-shell > .topbar,.debt-shell > .page-nav,.debt-shell > .auth-bar,.debt-shell > .debt-summary,
+  .task-shell > .topbar,.task-shell > .page-nav,.task-shell > .auth-bar,.task-shell > .task-board{
+    grid-column:1 / -1;
+  }
+
+  /* Dashboard: baki + butang di kiri, sejarah transaksi di kanan */
+  .dash-shell > .balance-card{
+    grid-column:1; align-self:stretch; max-height:430px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .dash-shell > .balance-card > strong{margin-bottom:0;}
+  .dash-shell > .quick-actions{grid-column:1; grid-template-columns:1fr 1fr; align-self:stretch; align-content:stretch;}
+  .dash-shell > .quick-actions .action{height:100%; min-height:128px; max-height:200px; justify-content:space-between;}
+  .dash-shell{grid-auto-flow:row dense;}
+  .dash-shell > .history-section{grid-column:2; grid-row:span 2;}
+
+  /* Simpanan: pecahan & senarai melebar penuh, isi cepat + sasaran bersebelahan */
+  .savings-shell > .history-section{grid-column:1 / -1;}
+  .savings-shell > .monthly-section{grid-column:1;}
+  .savings-shell > .goal-section{grid-column:2;}
+  .savings-shell > .savings-history .transaction-list{column-gap:26px;}
+
+  /* Hutang: borang melekat di kiri, senarai di kanan */
+  .debt-shell > .debt-form-section{grid-column:1; position:sticky; top:24px;}
+  .debt-shell > .debt-history{grid-column:2;}
+
+  /* To-Do: ringkasan di kiri, borang di kanan, board penuh di bawah */
+  .task-shell > .task-overview{grid-column:1; grid-template-columns:minmax(0,1fr);}
+  .task-shell > .task-form-section{grid-column:2;}
+  .task-shell > .task-overview article{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:2px 16px;}
+  .task-shell > .task-overview strong{grid-column:1; grid-row:1 / span 2; font-size:2.4rem; margin:0; align-self:center;}
+  .task-shell > .task-overview small{grid-column:2; grid-row:1;}
+  .task-shell > .task-overview span{grid-column:2; grid-row:2;}
+
+  /* Hero lebih besar bila ruang mengizinkan */
+  .balance-card > strong{font-size:3rem;}
+  .savings-shell > .balance-card .balance-breakdown{grid-template-columns:repeat(4,1fr);}
+}
+@media (min-width:1440px){
+  .app-shell{width:min(100% - 64px, 1320px);}
+  .task-shell{width:min(100% - 64px, 1440px);}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important;}

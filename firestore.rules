@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Setiap pengguna hanya boleh baca dan tulis data di bawah uid sendiri.
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    // Semua laluan lain ditutup.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

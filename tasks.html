@@ -3,12 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#14532d" />
+    <meta name="theme-color" content="#0d5a2b" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="icon" href="favicon.ico?v=16" sizes="any" />
-    <link rel="icon" href="icon.svg?v=16" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=16" />
-    <link rel="stylesheet" href="styles.css?v=16" />
+    <link rel="icon" href="favicon.ico?v=17" sizes="any" />
+    <link rel="icon" href="icon.svg?v=17" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=17" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="styles.css?v=17" />
     <title>To-Do Harian · Financial Tracker</title>
   </head>
   <body>
@@ -21,7 +24,7 @@
     </main>
     <dialog id="taskDialog" class="transaction-dialog"><form id="taskEditForm" method="dialog"><div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2>Edit task</h2></div><button class="icon-button close-button" id="closeTaskEdit" type="button" aria-label="Tutup">×</button></div><label>Tajuk tugasan<input id="editTaskTitle" required maxlength="100" /></label><div class="two-columns"><label>Status<select id="editTaskStatus"><option value="pending">Pending</option><option value="urgent">Urgent</option><option value="waiting">Waiting</option><option value="complete">Complete</option></select></label><label>Tarikh akhir<input id="editTaskDue" required type="date" /></label></div><label>Nota ringkas<input id="editTaskNote" maxlength="100" /></label><label class="focus-option dialog-focus"><input id="editTaskFocus" type="checkbox" /> Fokus hari ini</label><button class="save-button" type="submit">Kemas kini task</button><button type="button" class="danger-button" id="deleteTask">Padam task</button></form></dialog>
     <template id="emptyTaskTemplate"><p class="empty-task">Tiada task</p></template>
-    <script src="tasks.js?v=16"></script>
-    <script type="module" src="cloud.js?v=16"></script>
+    <script src="tasks.js?v=17"></script>
+    <script type="module" src="cloud.js?v=17"></script>
   </body>
 </html>

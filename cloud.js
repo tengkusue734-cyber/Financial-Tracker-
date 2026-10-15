@@ -19,7 +19,8 @@ const DATA_KEYS = [
   { name: "categories",   storageKey: "financial-tracker-categories-v1",   kind: "categories" },
   { name: "debts",        storageKey: "financial-tracker-debts-v1",        kind: "list" },
   { name: "tasks",        storageKey: "financial-tracker-tasks-v1",        kind: "list" },
-  { name: "savingsGoals", storageKey: "financial-tracker-savings-goals-v1", kind: "map" }
+  { name: "savingsGoals", storageKey: "financial-tracker-savings-goals-v1", kind: "map" },
+  { name: "projects",    storageKey: "financial-tracker-projects-v1",      kind: "list" }
 ];
 DATA_KEYS.forEach(entry => { entry.stampKey = `${entry.storageKey}::updatedAt`; });
 const byStorageKey = new Map(DATA_KEYS.map(entry => [entry.storageKey, entry]));

@@ -107,6 +107,7 @@ function renderTasks() {
     });
     afterList();
   });
+  document.dispatchEvent(new CustomEvent("ft-tasks-rendered"));
 }
 
 task$("#taskDueDate").value = todayTaskDate;

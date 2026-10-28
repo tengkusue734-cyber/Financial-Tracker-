@@ -35,7 +35,7 @@ function saveTlUi() { try { localStorage.setItem(TL_UI_KEY, JSON.stringify({ vie
 
 let projects = loadProjects();
 const savedUi = loadTlUi();
-let view = savedUi.view === "timeline" ? "timeline" : "board";
+let view = ["board", "timeline", "issues"].includes(savedUi.view) ? savedUi.view : "board";
 let zoom = savedUi.zoom === "week" ? "week" : "day";
 let activeId = savedUi.activeId || "";
 let editing = null;   // { kind:"task"|"sub", taskId, subId, isNew }
@@ -502,7 +502,7 @@ function applyView() {
   const boardParts = [".task-overview", ".task-form-section", ".task-board"];
   boardParts.forEach(selector => {
     const node = document.querySelector(selector);
-    if (node) node.hidden = view === "timeline";
+    if (node) node.hidden = view !== "board";
   });
   tl$("#timelineView").hidden = view !== "timeline";
   document.querySelectorAll("[data-view]").forEach(button => {

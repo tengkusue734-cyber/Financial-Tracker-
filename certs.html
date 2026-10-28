@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d5a2b" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="favicon.ico?v=22" sizes="any" />
+    <link rel="icon" href="icon.svg?v=22" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=22" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="styles.css?v=22" />
+    <title>Sijil &amp; Lesen · Financial Tracker</title>
+  </head>
+  <body>
+    <main class="app-shell cert-shell">
+      <header class="topbar"><div><p class="eyebrow">TEMPOH SAH</p><h1>Sijil &amp; Lesen</h1></div><a class="icon-button nav-home" href="index.html" aria-label="Kembali ke dashboard">⌂</a></header>
+      <nav class="page-nav" aria-label="Navigasi utama"><a href="index.html">Dashboard</a><a href="savings.html">Simpanan</a><a href="tasks.html">To-Do</a><a href="debts.html">Hutang</a><a class="active" href="certs.html">Sijil</a></nav>
+
+      <section class="debt-summary cert-summary" aria-label="Ringkasan sijil">
+        <article class="sum-total"><small>Semua sijil</small><strong id="certTotal">0</strong><span id="certTotalNote">0 rekod</span></article>
+        <article class="sum-expired"><small>Tamat tempoh</small><strong id="certExpired">0</strong><span id="certExpiredNote">Tiada yang luput</span></article>
+        <article class="sum-soon"><small>Hampir tamat</small><strong id="certSoon">0</strong><span id="certSoonNote">Tiada amaran</span></article>
+        <article class="sum-valid"><small>Masih sah</small><strong id="certOk">0</strong><span id="certOkNote">—</span></article>
+      </section>
+
+      <section class="debt-form-section cert-form-section">
+        <div><p class="eyebrow">REKOD BARU</p><h2>Tambah sijil</h2></div>
+        <form id="certForm" class="debt-form">
+          <label>Nama sijil / lesen<input id="certName" required maxlength="80" placeholder="Contoh: Sijil Pendaftaran CIDB" /></label>
+          <div class="two-columns">
+            <label>Dikeluarkan oleh<input id="certIssuer" maxlength="60" placeholder="Contoh: CIDB Malaysia" /></label>
+            <label>No. sijil / rujukan<input id="certNumber" maxlength="60" placeholder="Contoh: 0120260012345" /></label>
+          </div>
+          <div class="two-columns">
+            <label>Tarikh mula<input id="certIssued" type="date" /></label>
+            <label>Sah sehingga<input id="certExpiry" type="date" required /></label>
+          </div>
+          <div class="two-columns">
+            <label>Ingatkan saya (hari sebelum)<input id="certRemind" type="number" min="0" max="365" step="1" inputmode="numeric" placeholder="60" /></label>
+            <label>Nota<input id="certNote" maxlength="100" placeholder="Contoh: Perlu surat sokongan bank" /></label>
+          </div>
+          <button class="save-button" type="submit">Simpan sijil</button>
+        </form>
+      </section>
+
+      <section class="history-section cert-list-section" aria-labelledby="certListTitle">
+        <div class="section-heading"><div><p class="eyebrow">SENARAI</p><h2 id="certListTitle">Rekod sijil</h2></div><span class="count" id="certCount">0 sijil</span></div>
+        <div class="scope-switch cert-filter" role="group" aria-label="Tapis sijil">
+          <button type="button" data-cert-filter="action">Perlu tindakan</button>
+          <button type="button" data-cert-filter="ok">Masih sah</button>
+          <button type="button" data-cert-filter="all">Semua</button>
+        </div>
+        <div id="certList" class="cert-list" aria-live="polite"></div>
+      </section>
+
+      <p class="page-note">Senarai disusun ikut yang paling hampir tamat tempoh. Tetapkan <strong>bilangan hari amaran</strong> bagi setiap sijil — bila sampai tempoh itu, ia akan dipaparkan sebagai amaran di sini dan pada Dashboard. Tekan <strong>Perbaharui</strong> selepas sijil diperbaharui; tempoh lama akan disimpan sebagai rekod.</p>
+    </main>
+
+    <dialog id="certDialog" class="transaction-dialog"><form id="certEditForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">KEMAS KINI</p><h2>Edit sijil</h2></div><button class="icon-button close-button" id="closeCertEdit" type="button" aria-label="Tutup">×</button></div>
+      <label>Nama sijil / lesen<input id="editCertName" required maxlength="80" /></label>
+      <div class="two-columns"><label>Dikeluarkan oleh<input id="editCertIssuer" maxlength="60" /></label><label>No. sijil / rujukan<input id="editCertNumber" maxlength="60" /></label></div>
+      <div class="two-columns"><label>Tarikh mula<input id="editCertIssued" type="date" /></label><label>Sah sehingga<input id="editCertExpiry" type="date" required /></label></div>
+      <div class="two-columns"><label>Ingatkan saya (hari sebelum)<input id="editCertRemind" type="number" min="0" max="365" step="1" inputmode="numeric" /></label><label>Nota<input id="editCertNote" maxlength="100" /></label></div>
+      <button class="save-button" type="submit">Kemas kini sijil</button>
+      <button type="button" class="danger-button" id="deleteCert">Padam sijil ini</button>
+    </form></dialog>
+
+    <dialog id="renewDialog" class="transaction-dialog"><form id="renewForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">PEMBAHARUAN</p><h2 id="renewTitle">Perbaharui sijil</h2></div><button class="icon-button close-button" id="closeRenew" type="button" aria-label="Tutup">×</button></div>
+      <p id="renewHelp" class="form-help"></p>
+      <div class="two-columns"><label>Tarikh mula baharu<input id="renewIssued" type="date" required /></label><label>Sah sehingga<input id="renewExpiry" type="date" required /></label></div>
+      <div class="scope-switch renew-quick" role="group" aria-label="Tempoh pantas">
+        <button type="button" data-months="6">+6 bulan</button>
+        <button type="button" data-months="12">+1 tahun</button>
+        <button type="button" data-months="24">+2 tahun</button>
+        <button type="button" data-months="36">+3 tahun</button>
+      </div>
+      <button class="save-button" type="submit">Simpan pembaharuan</button>
+    </form></dialog>
+
+    <template id="emptyCertTemplate">
+      <div class="empty-state"><div>◎</div><h3>Belum ada sijil direkod</h3><p>Tambah sijil, lesen atau permit yang ada tarikh "sah sehingga" supaya kau tak terlepas tarikh perbaharui.</p></div>
+    </template>
+
+    <script src="certs.js?v=22"></script>
+    <script type="module" src="cloud.js?v=22"></script>
+  </body>
+</html>
